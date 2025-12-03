@@ -7,8 +7,9 @@ client = OpenAI(api_key=api_key)
 
 VECTOR_STORE_ID = "vs_6913baba995c81918b7f38c033955571"
 
-st.set_page_config(page_title="Chat UP", page_icon="🎓")
-st.title("Chatbot - Universidad Panamericana")
+st.set_page_config(page_title="ALBot", page_icon="😎")
+st.title("ALBot - UP")
+st.caption("Resuelve dudas de todo tipo")
 
 if "messages" not in st.session_state:
     st.session_state.messages = []
@@ -44,6 +45,7 @@ if user_input:
 
 
     
+
 
 
 
