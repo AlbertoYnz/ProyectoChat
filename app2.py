@@ -8,11 +8,23 @@ client = OpenAI(api_key=api_key)
 VECTOR_STORE_ID = "vs_6913baba995c81918b7f38c033955571"
 
 st.set_page_config(page_title="ALBot", page_icon="😎")
+
+st.markdown("""
+<style>
+body {
+    background-color: #f2f6fc;
+}
+</style>
+""", unsafe_allow_html=True)
+
 st.title("ALBot - UP")
 st.caption("Resuelve dudas de todo tipo")
 
+st.divider()
+
 if st.button("🗑️ Borrar conversacion"):
     st.session_state.messages = []
+    st.return()
 
 if "messages" not in st.session_state:
     st.session_state.messages = []
@@ -48,6 +60,7 @@ if user_input:
 
 
     
+
 
 
 
