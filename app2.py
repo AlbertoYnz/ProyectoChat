@@ -12,7 +12,7 @@ st.set_page_config(page_title="ALBot")
 st.markdown("""
 <style>
 body {
-    background-color: #f2f6fc;
+    background-color: white;
 }
 </style>
 """, unsafe_allow_html=True)
@@ -59,6 +59,7 @@ if user_input:
 
 
     
+
 
 
 
