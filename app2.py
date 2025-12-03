@@ -45,7 +45,7 @@ if user_input:
     st.session_state.messages.append({"role": "user", "content": user_input})
     st.chat_message("user").write(user_input)
 
-     full_prompt = user_input
+    full_prompt = user_input
     if file_text:
         full_prompt = f"Basado en el siguiente archivo:\n{file_text}\n\nPregunta: {user_input}"
 
@@ -64,11 +64,13 @@ if user_input:
     st.session_state.messages.append({"role": "assistant", "content": reply})
     st.chat_message("assistant").write(reply)
 
+
 st.divider()
 
 if st.button("🗑️ Borrar conversacion"):
     st.session_state.messages = []
     
+
 
 
 
