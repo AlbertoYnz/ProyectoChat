@@ -7,7 +7,7 @@ client = OpenAI(api_key=api_key)
 
 VECTOR_STORE_ID = "vs_6913baba995c81918b7f38c033955571"
 
-st.set_page_config(page_title="ALBot", page_icon="😎")
+st.set_page_config(page_title="ALBot")
 
 st.markdown("""
 <style>
@@ -31,7 +31,7 @@ if "messages" not in st.session_state:
 for msg in st.session_state.messages:
     st.chat_message(msg["role"]).write(msg["content"])
 
-user_input = st.chat_input("Escribe tu pregunta sobre la universidad...")
+user_input = st.chat_input("Pregunta lo que quieras")
 
 if user_input:
     st.session_state.messages.append({"role": "user", "content": user_input})
@@ -59,6 +59,7 @@ if user_input:
 
 
     
+
 
 
 
