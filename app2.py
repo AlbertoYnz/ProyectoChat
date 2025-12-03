@@ -1,103 +1,47 @@
-import asyncio
+import streamlit as st
 import os
-from typing import Annotated
-
-from pydantic import BaseModel, Field
-
 from openai import OpenAI
 
-from agents import Agent, Runner, function_tool, set_default_openai_key
+api_key = os.getenv("OPENAI_API_KEY")
+client = OpenAI(api_key=api_key)
 
 VECTOR_STORE_ID = "vs_6913baba995c81918b7f38c033955571"
 
-set_default_openai_key(OPENAI_API_KEY)
-client = OpenAI(api_key=OPENAI_API_KEY)
+st.set_page_config(page_title="Chat UP", page_icon="🎓")
+st.title("Chatbot - Universidad Panamericana")
 
-class WordAnalysis(BaseModel):
-    word: str = Field(description="La palabra más repetida en la conversación")
-    count: int = Field(description="Número de veces que aparece la palabra")
+if "messages" not in st.session_state:
+    st.session_state.messages = []
 
-class RagSimilarity(BaseModel):
-    text: str = Field(description="resultados de la busqueda de la universida panamericana")
+for msg in st.session_state.messages:
+    st.chat_message(msg["role"]).write(msg["content"])
 
-@function_tool
-def get_word(
-    conversation_text: Annotated[str, "Texto completo de la conversación hasta el momento"]
-) -> WordAnalysis:
-    """Analiza el texto de la conversación y devuelve la palabra más repetida."""
-    import re
-    from collections import Counter
+user_input = st.chat_input("Escribe tu pregunta sobre la universidad...")
 
-    print("[debug] Analizando conversación...")
+if user_input:
+    st.session_state.messages.append({"role": "user", "content": user_input})
+    st.chat_message("user").write(user_input)
 
-    # Limpiar texto y convertir a minúsculas
-    clean_text = re.sub(r"[^a-zA-ZáéíóúÁÉÍÓÚñÑ0-9 ]", "", conversation_text.lower())
+    with st.spinner("Buscando información..."):
+        response = client.responses.create(
+            model="gpt-5-mini",
+            input=user_input,
+            tools=[{
+                "type": "file_search",
+                "vector_store_ids": [VECTOR_STORE_ID],
+                "max_num_results": 3
+            }]
+        )
 
-    words = clean_text.split()
-    if not words:
-        return WordAnalysis(word="", count=0)
+        messages = [m for m in response.output if m.type == "message"]
+        if messages:
+            reply = messages[0].content[0].text
+        else:
+            reply = "No se encontró información relevante."
 
-    counter = Counter(words)
-    word, count = counter.most_common(1)[0]
-    return WordAnalysis(word=word, count=count)
+    st.session_state.messages.append({"role": "assistant", "content": reply})
+    st.chat_message("assistant").write(reply)
 
-@function_tool
-def rag_funtion(
-    query: Annotated[str, "busca todo lo relacionado sobre historia u oferta acádemica de la universidad panamerica"]
-) -> RagSimilarity:
-    print("[debug] buscando en el RAG...")
-    response = client.responses.create(
-        model="gpt-5-mini",
-        input=query,
-        tools=[{
-            "type": "file_search",
-            "vector_store_ids": [VECTOR_STORE_ID],
-            "max_num_results": 2
-        }],
-    )
-    print(f"regresando los {len(response.output)} documentos encontrados")
-    
-
-    messages = [
-        m
-        for m in response.output
-        if m.type == "message"
-    ]
-
-    if not messages:
-        return "-- No response --"
-
-    assistance_message_text = messages[0].content[0].text
-    print(assistance_message_text)
- 
-    return RagSimilarity(text=assistance_message_text)
-    
-
-async def main():
-    print("🚀 Agentes con OpenAI Agents SDK")
-
-    agent = Agent(
-        name="Agente de atención a cliente Universidad Panamericana",
-        instructions="Responde como un asistente que aclara dudas de la universida panamericana.",
-        tools=[get_word, rag_funtion]
-    )
-
-    conversation = client.conversations.create()
-
-   
-    while True:
-        user_input = input("Tú: ")
-        if user_input.lower() in ["salir", "exit", "quit"]:
-            print("👋 ¡Adiós!")
-            break
-
-        result = await Runner.run(agent, input=user_input, conversation_id=conversation.id)
-
-        print("🟩 Respuesta del agente:")
-        print(result.final_output)
-       
-    print("✅ Conversación terminada.")
-    
 
     
 
@@ -105,3 +49,4 @@ async def main():
 
 if __name__ == "__main__":
     asyncio.run(main())
+
