@@ -24,7 +24,6 @@ st.divider()
 
 if st.button("🗑️ Borrar conversacion"):
     st.session_state.messages = []
-    st.return()
 
 if "messages" not in st.session_state:
     st.session_state.messages = []
@@ -60,6 +59,7 @@ if user_input:
 
 
     
+
 
 
 
