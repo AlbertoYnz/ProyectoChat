@@ -23,6 +23,10 @@ client = OpenAI(api_key=api_key)
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
+if "file_text" not in st.session_state:
+    st.session_state.file_text = ""
+    
+
 for msg in st.session_state.messages:
     st.chat_message(msg["role"]).write(msg["content"])
 
@@ -33,8 +37,8 @@ if user_input:
     st.chat_message("user").write(user_input)
 
     full_prompt = user_input
-    if file_text:
-        full_prompt = f"Basado en el siguiente archivo:\n{file_text}\n\nPregunta: {user_input}"
+    if st.session_state.file_text:
+        full_prompt = f"Basado en el siguiente archivo:\n{st.session_state.file_text}\n\nPregunta: {user_input}"
 
     with st.spinner("Pensando..."):
         response = client.responses.create(
@@ -76,6 +80,7 @@ if uploaded_file:
         file_text = uploaded_file.read().decode("utf-8")
 
     st.session_state.file_text = file_text
+
 
 
 
