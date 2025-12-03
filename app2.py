@@ -17,19 +17,6 @@ body {
 st.title("ALBot - UP")
 st.caption("Resuelve dudas de todo tipo")
 
-uploaded_file = st.file_uploader("Sube un archivo (PDF o TXT)", type=["pdf", "txt"])
-file_text = ""
-
-if uploaded_file:
-    if uploaded_file.type == "application/pdf":
-        from pypdf import PdfReader
-        reader = PdfReader(uploaded_file)
-        for page in reader.pages:
-            file_text += (page.extract_text() or "") + "\n"
-
-    elif uploaded_file.type == "text/plain":
-        file_text = uploaded_file.read().decode("utf-8")
-
 api_key = os.getenv("OPENAI_API_KEY")
 client = OpenAI(api_key=api_key)
 
@@ -66,10 +53,31 @@ if user_input:
 
 
 st.divider()
+col1, col2 = st.columns(2)
 
-if st.button("🗑️ Borrar conversacion"):
-    st.session_state.messages = []
-    
+with col1: 
+    if st.button("Borrar conversacion"):
+        st.session_state.messages = []
+        st.session_state.file_text = ""
+
+with col2:
+    uploaded_file = st.file_uploader("📎 Subir archivo (PDF o TXT)", type=["pdf", "txt"], key="file_uploader")
+
+if uploaded_file:
+    file_text = ""
+
+    if uploaded_file.type == "application/pdf":
+        from pypdf import PdfReader
+        reader = PdfReader(uploaded_file)
+        for page in reader.pages:
+            file_text += (page.extract_text() or "") + "\n"
+
+    elif uploaded_file.type == "text/plain":
+        file_text = uploaded_file.read().decode("utf-8")
+
+    st.session_state.file_text = file_text
+
+
 
 
 
