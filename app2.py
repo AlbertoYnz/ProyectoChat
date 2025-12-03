@@ -10,6 +10,8 @@ VECTOR_STORE_ID = "vs_6913baba995c81918b7f38c033955571"
 st.set_page_config(page_title="ALBot", page_icon="😎")
 st.title("ALBot - UP")
 st.caption("Resuelve dudas de todo tipo")
+st.button("Borrar conversacion")
+    st.session_state.messages = []
 
 if "messages" not in st.session_state:
     st.session_state.messages = []
@@ -45,6 +47,7 @@ if user_input:
 
 
     
+
 
 
 
