@@ -11,7 +11,7 @@ st.set_page_config(page_title="ALBot", page_icon="😎")
 st.title("ALBot - UP")
 st.caption("Resuelve dudas de todo tipo")
 
-if st.button("🗑️ Borrar conversacion")
+if st.button("🗑️ Borrar conversacion"):
     st.session_state.messages = []
 
 if "messages" not in st.session_state:
@@ -48,6 +48,7 @@ if user_input:
 
 
     
+
 
 
 
